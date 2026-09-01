@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Lost & Found Portal</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root{--primary:#315efb;--dark:#172033;--soft:#f4f7ff}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#f7f9fc;color:#172033}
+.navbar{background:#172033}.navbar-brand,.nav-link{color:#fff!important}.nav-link{opacity:.9}.nav-link:hover{opacity:1}
+.hero{background:linear-gradient(135deg,#172033,#315efb);color:#fff;padding:90px 0 80px}
+.hero .btn-light{color:#172033}.section{padding:65px 0}.section-title{font-weight:800}.card{border:0;border-radius:18px;box-shadow:0 8px 28px rgba(20,35,70,.08)}
+.stat{padding:24px}.stat i{font-size:30px;color:var(--primary)}.item-card{height:100%;overflow:hidden}.item-img{height:190px;object-fit:cover;background:#e9eefc}.badge{font-weight:600}.footer{background:#172033;color:#cbd3e3;padding:30px 0}
+.form-control,.form-select{border-radius:10px;padding:11px}.btn{border-radius:10px}.empty{padding:45px;text-align:center;color:#6c757d}
+.hidden{display:none!important}.admin-only{display:none}.table{vertical-align:middle}.notification-dot{font-size:10px}
+.toast-container{z-index:2000}
+.match-box{background:#eef3ff;border-left:4px solid var(--primary);padding:12px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+<div class="container">
+<a class="navbar-brand fw-bold" href="#" onclick="showPage('home')"><i class="bi bi-search-heart me-2"></i>College Lost & Found</a>
+<button class="navbar-toggler bg-light" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+<div class="collapse navbar-collapse" id="nav">
+<ul class="navbar-nav ms-auto align-items-lg-center">
+<li class="nav-item"><a class="nav-link" href="#" onclick="showPage('home')">Home</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="showPage('lost')">Lost Items</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="showPage('found')">Found Items</a></li>
+<li class="nav-item user-nav"><a class="nav-link" href="#" onclick="showPage('reportLost')">Report Lost</a></li>
+<li class="nav-item user-nav"><a class="nav-link" href="#" onclick="showPage('reportFound')">Report Found</a></li>
+<li class="nav-item user-nav"><a class="nav-link" href="#" onclick="showPage('claims')">My Claims</a></li>
+<li class="nav-item user-nav"><a class="nav-link" href="#" onclick="showPage('dashboard')">Dashboard</a></li>
+<li class="nav-item admin-only"><a class="nav-link" href="#" onclick="showPage('admin')">Admin</a></li>
+<li class="nav-item"><a class="nav-link position-relative" href="#" onclick="showPage('notifications')"><i class="bi bi-bell"></i><span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-dot">0</span></a></li>
+<li class="nav-item ms-lg-2"><button id="authBtn" class="btn btn-light btn-sm" onclick="openAuth()">Login / Register</button></li>
+</ul></div></div></nav>
+
+<main>
+<section id="page-home" class="page">
+<div class="hero"><div class="container text-center">
+<h1 class="display-4 fw-bold">College Lost & Found Portal</h1>
+<p class="lead mb-4">Report lost items, share found items, and help reunite belongings with their owners.</p>
+<button class="btn btn-light btn-lg me-2" onclick="showPage('lost')"><i class="bi bi-search me-1"></i>Browse Items</button>
+<button class="btn btn-outline-light btn-lg" onclick="requireLogin('reportLost')"><i class="bi bi-plus-circle me-1"></i>Report an Item</button>
+</div></div>
+<div class="container section">
+<div class="row g-4 mb-5">
+<div class="col-md-3"><div class="card stat"><i class="bi bi-exclamation-circle"></i><h3 id="statLost">0</h3><p class="mb-0 text-muted">Lost Items</p></div></div>
+<div class="col-md-3"><div class="card stat"><i class="bi bi-box-seam"></i><h3 id="statFound">0</h3><p class="mb-0 text-muted">Found Items</p></div></div>
+<div class="col-md-3"><div class="card stat"><i class="bi bi-check-circle"></i><h3 id="statReturned">0</h3><p class="mb-0 text-muted">Items Returned</p></div></div>
+<div class="col-md-3"><div class="card stat"><i class="bi bi-hourglass-split"></i><h3 id="statClaims">0</h3><p class="mb-0 text-muted">Pending Claims</p></div></div>
+</div>
+<h2 class="section-title text-center mb-4">How It Works</h2>
+<div class="row g-4">
+<div class="col-md-3"><div class="card p-4 text-center h-100"><i class="bi bi-pencil-square fs-1 text-primary"></i><h5 class="mt-3">1. Report</h5><p class="text-muted">Tell the college community about a lost or found item.</p></div></div>
+<div class="col-md-3"><div class="card p-4 text-center h-100"><i class="bi bi-search fs-1 text-primary"></i><h5 class="mt-3">2. Search</h5><p class="text-muted">Search items by name, category, color or location.</p></div></div>
+<div class="col-md-3"><div class="card p-4 text-center h-100"><i class="bi bi-send-check fs-1 text-primary"></i><h5 class="mt-3">3. Claim</h5><p class="text-muted">Submit a claim with details proving ownership.</p></div></div>
+<div class="col-md-3"><div class="card p-4 text-center h-100"><i class="bi bi-box-arrow-in-left fs-1 text-primary"></i><h5 class="mt-3">4. Return</h5><p class="text-muted">Verify the claim and return the item safely.</p></div></div>
+</div></div>
+</section>
+
+<section id="page-lost" class="page section hidden"><div class="container">
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h2 class="section-title">Lost Items</h2><p class="text-muted">Items reported missing around campus.</p></div></div>
+<div class="card p-3 mb-4"><div class="row g-2"><div class="col-md-5"><input id="lostSearch" class="form-control" placeholder="Search item, brand, color..."></div><div class="col-md-3"><select id="lostCategory" class="form-select"></select></div><div class="col-md-2"><select id="lostSort" class="form-select"><option value="new">Newest</option><option value="old">Oldest</option></select></div><div class="col-md-2"><button class="btn btn-primary w-100" onclick="renderItems('lost')"><i class="bi bi-filter"></i> Filter</button></div></div></div>
+<div id="lostGrid" class="row g-4"></div></div></section>
+
+<section id="page-found" class="page section hidden"><div class="container">
+<div class="mb-4"><h2 class="section-title">Found Items</h2><p class="text-muted">Items found around the college campus.</p></div>
+<div class="card p-3 mb-4"><div class="row g-2"><div class="col-md-5"><input id="foundSearch" class="form-control" placeholder="Search item, brand, color..."></div><div class="col-md-3"><select id="foundCategory" class="form-select"></select></div><div class="col-md-2"><select id="foundSort" class="form-select"><option value="new">Newest</option><option value="old">Oldest</option></select></div><div class="col-md-2"><button class="btn btn-primary w-100" onclick="renderItems('found')"><i class="bi bi-filter"></i> Filter</button></div></div></div>
+<div id="foundGrid" class="row g-4"></div></div></section>
+
+<section id="page-reportLost" class="page section hidden"><div class="container"><div class="card p-4 mx-auto" style="max-width:850px"><h2 class="section-title mb-4">Report Lost Item</h2><form id="lostForm"><input type="hidden" name="type" value="lost"><div class="row g-3">
+<div class="col-md-6"><label class="form-label">Item Name *</label><input name="name" class="form-control" required></div>
+<div class="col-md-6"><label class="form-label">Category *</label><select name="category" class="form-select categorySelect" required></select></div>
+<div class="col-md-6"><label class="form-label">Date Lost *</label><input name="date" type="date" class="form-control" required></div>
+<div class="col-md-6"><label class="form-label">Location Lost *</label><input name="location" class="form-control" placeholder="Library, Canteen, Lab..." required></div>
+<div class="col-md-4"><label class="form-label">Color</label><input name="color" class="form-control"></div>
+<div class="col-md-4"><label class="form-label">Brand</label><input name="brand" class="form-control"></div>
+<div class="col-md-4"><label class="form-label">Image URL</label><input name="image" class="form-control" placeholder="https://..."></div>
+<div class="col-12"><label class="form-label">Description *</label><textarea name="description" class="form-control" rows="4" required></textarea></div>
+<div class="col-12"><button class="btn btn-primary"><i class="bi bi-send me-1"></i>Submit Lost Report</button></div></div></form></div></div></section>
+
+<section id="page-reportFound" class="page section hidden"><div class="container"><div class="card p-4 mx-auto" style="max-width:850px"><h2 class="section-title mb-4">Report Found Item</h2><form id="foundForm"><input type="hidden" name="type" value="found"><div class="row g-3">
+<div class="col-md-6"><label class="form-label">Item Name *</label><input name="name" class="form-control" required></div>
+<div class="col-md-6"><label class="form-label">Category *</label><select name="category" class="form-select categorySelect" required></select></div>
+<div class="col-md-6"><label class="form-label">Date Found *</label><input name="date" type="date" class="form-control" required></div>
+<div class="col-md-6"><label class="form-label">Location Found *</label><input name="location" class="form-control" placeholder="Library, Canteen, Lab..." required></div>
+<div class="col-md-4"><label class="form-label">Color</label><input name="color" class="form-control"></div>
+<div class="col-md-4"><label class="form-label">Brand</label><input name="brand" class="form-control"></div>
+<div class="col-md-4"><label class="form-label">Image URL</label><input name="image" class="form-control" placeholder="https://..."></div>
+<div class="col-12"><label class="form-label">Description *</label><textarea name="description" class="form-control" rows="4" required></textarea></div>
+<div class="col-12"><button class="btn btn-success"><i class="bi bi-send me-1"></i>Submit Found Report</button></div></div></form></div></div></section>
+
+<section id="page-dashboard" class="page section hidden"><div class="container"><h2 class="section-title mb-4">My Dashboard</h2><div id="dashboardContent"></div></div></section>
+<section id="page-claims" class="page section hidden"><div class="container"><h2 class="section-title mb-4">My Claims</h2><div class="card p-3"><div class="table-responsive"><table class="table" id="claimsTable"></table></div></div></div></section>
+<section id="page-notifications" class="page section hidden"><div class="container"><div class="d-flex justify-content-between mb-4"><h2 class="section-title">Notifications</h2><button class="btn btn-outline-primary btn-sm" onclick="markAllRead()">Mark all as read</button></div><div id="notificationsList"></div></div></section>
+
+<section id="page-admin" class="page section hidden"><div class="container"><h2 class="section-title mb-4">Admin Dashboard</h2><div id="adminContent"></div></div></section>
+</main>
+
+<footer class="footer mt-5"><div class="container text-center"><strong>College Lost & Found Portal</strong><p class="mb-0 mt-1">A simple digital platform for returning belongings to their rightful owners.</p></div></footer>
+
+<div class="modal fade" id="authModal"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 id="authTitle">Login</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">
+<form id="loginForm"><input type="email" id="loginEmail" class="form-control mb-3" placeholder="Email" required><input type="password" id="loginPassword" class="form-control mb-3" placeholder="Password" required><button class="btn btn-primary w-100">Login</button></form>
+<form id="registerForm" class="hidden"><input id="regName" class="form-control mb-3" placeholder="Full Name" required><input id="regId" class="form-control mb-3" placeholder="Student/Staff ID" required><input id="regEmail" type="email" class="form-control mb-3" placeholder="Email" required><input id="regPassword" type="password" class="form-control mb-3" placeholder="Password" required><button class="btn btn-primary w-100">Create Account</button></form>
+<div class="text-center mt-3"><button id="switchAuth" class="btn btn-link" onclick="toggleAuth()">Create an account</button></div>
+<p class="small text-muted text-center mb-0">Demo admin: admin@college.com / admin123</p>
+</div></div></div></div>
+
+<div class="modal fade" id="itemModal"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 id="itemModalTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="itemModalBody"></div></div></div></div>
+
+<div class="modal fade" id="claimModal"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5>Submit Claim Request</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="claimForm"><input type="hidden" id="claimItemId"><textarea id="claimReason" class="form-control mb-3" rows="4" placeholder="Why do you believe this item belongs to you?" required></textarea><input id="claimLocation" class="form-control mb-3" placeholder="Where did you lose it?" required><input id="claimDate" type="date" class="form-control mb-3" required><textarea id="claimDetails" class="form-control mb-3" rows="3" placeholder="Additional identifying information" required></textarea><button class="btn btn-primary w-100">Submit Claim</button></form></div></div></div></div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3"><div id="toast" class="toast"><div class="toast-body" id="toastBody"></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const CATEGORIES=["Mobile","Laptop","Books","Wallet","ID Card","Keys","Bag","Watch","Documents","Accessories","Sports Equipment","Other"];
+const imgDefault="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80";
+let users=JSON.parse(localStorage.getItem("users")||"null");
+let items=JSON.parse(localStorage.getItem("items")||"null");
+let claims=JSON.parse(localStorage.getItem("claims")||"null");
+let notifications=JSON.parse(localStorage.getItem("notifications")||"null");
+let currentUser=JSON.parse(localStorage.getItem("currentUser")||"null");
+
+if(!users){users=[
+{id:1,name:"Demo Student",studentId:"STU001",email:"student@college.com",password:"student123",role:"user"},
+{id:2,name:"Admin",studentId:"ADMIN",email:"admin@college.com",password:"admin123",role:"admin"}
+];save();}
+if(!items){items=[
+{id:101,type:"lost",name:"Black Backpack",category:"Bag",date:"2026-08-28",location:"Central Library",color:"Black",brand:"Skybags",description:"Black backpack with two compartments and a small keychain.",image:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80",status:"LOST",userId:1},
+{id:102,type:"lost",name:"Wireless Earbuds",category:"Accessories",date:"2026-08-26",location:"Cafeteria",color:"White",brand:"Boat",description:"White wireless earbuds in a charging case.",image:"https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?auto=format&fit=crop&w=900&q=80",status:"LOST",userId:1},
+{id:103,type:"found",name:"Blue Water Bottle",category:"Other",date:"2026-08-30",location:"Sports Ground",color:"Blue",brand:"Milton",description:"Blue insulated water bottle found near the entrance.",image:"https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=900&q=80",status:"FOUND",userId:2},
+{id:104,type:"found",name:"Scientific Calculator",category:"Accessories",date:"2026-08-29",location:"Engineering Lab",color:"Black",brand:"Casio",description:"Black scientific calculator with a protective cover.",image:"https://images.unsplash.com/photo-1596495578062-1c9c5a4c5a4c?auto=format&fit=crop&w=900&q=80",status:"FOUND",userId:2}
+];save();}
+if(!claims){claims=[];save();}
+if(!notifications){notifications=[];save();}
+function save(){localStorage.setItem("users",JSON.stringify(users));localStorage.setItem("items",JSON.stringify(items));localStorage.setItem("claims",JSON.stringify(claims));localStorage.setItem("notifications",JSON.stringify(notifications));localStorage.setItem("currentUser",JSON.stringify(currentUser));}
+function toast(msg){document.getElementById("toastBody").textContent=msg;new bootstrap.Toast(document.getElementById("toast")).show();}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function showPage(name){
+document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));document.getElementById("page-"+name)?.classList.remove("hidden");
+if(name==="lost"||name==="found")renderItems(name);if(name==="dashboard")renderDashboard();if(name==="claims")renderClaims();if(name==="notifications")renderNotifications();if(name==="admin")renderAdmin();window.scrollTo({top:0,behavior:"smooth"});
+}
+function openAuth(){new bootstrap.Modal("#authModal").show();}
+function toggleAuth(){let l=document.getElementById("loginForm"),r=document.getElementById("registerForm");l.classList.toggle("hidden");r.classList.toggle("hidden");document.getElementById("authTitle").textContent=l.classList.contains("hidden")?"Register":"Login";document.getElementById("switchAuth").textContent=l.classList.contains("hidden")?"Already have an account? Login":"Create an account";}
+function requireLogin(page){if(!currentUser){toast("Please login first.");openAuth();return}showPage(page);}
+function updateNav(){
+document.getElementById("authBtn").textContent=currentUser?`Logout (${currentUser.name.split(" ")[0]})`:"Login / Register";
+document.getElementById("authBtn").onclick=()=>currentUser?logout():openAuth();
+document.querySelectorAll(".user-nav").forEach(x=>x.style.display=currentUser?"block":"none");
+document.querySelectorAll(".admin-only").forEach(x=>x.style.display=currentUser?.role==="admin"?"block":"none");
+let unread=notifications.filter(n=>n.userId===currentUser?.id&&!n.read).length;document.getElementById("notifCount").textContent=unread;
+}
+function logout(){currentUser=null;save();updateNav();showPage("home");toast("Logged out successfully.");}
+function fillCategories(){document.querySelectorAll(".categorySelect").forEach(s=>s.innerHTML=CATEGORIES.map(c=>`<option>${c}</option>`).join(""));["lostCategory","foundCategory"].forEach(id=>{let s=document.getElementById(id);s.innerHTML="<option value=''>All Categories</option>"+CATEGORIES.map(c=>`<option>${c}</option>`).join("")});}
+function renderItems(type){
+let search=(document.getElementById(type+"Search")?.value||"").toLowerCase(),cat=document.getElementById(type+"Category")?.value||"",sort=document.getElementById(type+"Sort")?.value||"new";
+let list=items.filter(i=>i.type===type&&!["RETURNED","RESOLVED"].includes(i.status)&&(!cat||i.category===cat)&&(!search||[i.name,i.category,i.location,i.brand,i.color,i.description].join(" ").toLowerCase().includes(search))).sort((a,b)=>sort==="new"?new Date(b.date)-new Date(a.date):new Date(a.date)-new Date(b.date));
+let grid=document.getElementById(type+"Grid");if(!list.length){grid.innerHTML='<div class="col-12"><div class="card empty"><i class="bi bi-inbox fs-1"></i><h5 class="mt-3">No items found</h5><p>Try a different search or filter.</p></div></div>';return}
+grid.innerHTML=list.map(i=>card(i)).join("");
+}
+function card(i){return `<div class="col-md-6 col-lg-4"><div class="card item-card"><img class="item-img w-100" src="${esc(i.image||imgDefault)}" onerror="this.src='${imgDefault}'"><div class="card-body d-flex flex-column"><div class="d-flex justify-content-between"><span class="badge ${i.type==="found"?"text-bg-success":"text-bg-warning"}">${i.status}</span><small class="text-muted">${esc(i.category)}</small></div><h5 class="mt-3">${esc(i.name)}</h5><p class="small text-muted mb-1"><i class="bi bi-geo-alt"></i> ${esc(i.location)}</p><p class="small text-muted">${esc(i.color||"Color not specified")} · ${esc(i.brand||"Brand not specified")}</p><button class="btn btn-outline-primary mt-auto" onclick="viewItem(${i.id})">View Details</button></div></div></div>`}
+function viewItem(id){
+let i=items.find(x=>x.id===id);if(!i)return;
+document.getElementById("itemModalTitle").textContent=i.name;
+let claimBtn=i.type==="found"&&i.status==="FOUND"?`<button class="btn btn-primary" onclick="openClaim(${i.id})">Submit Claim Request</button>`:"";
+document.getElementById("itemModalBody").innerHTML=`<div class="row g-4"><div class="col-md-5"><img src="${esc(i.image||imgDefault)}" onerror="this.src='${imgDefault}'" class="img-fluid rounded-4"></div><div class="col-md-7"><span class="badge ${i.type==="found"?"text-bg-success":"text-bg-warning"}">${i.status}</span><h3 class="mt-2">${esc(i.name)}</h3><p>${esc(i.description)}</p><p><b>Category:</b> ${esc(i.category)}<br><b>Date:</b> ${esc(i.date)}<br><b>Location:</b> ${esc(i.location)}<br><b>Color:</b> ${esc(i.color||"Not specified")}<br><b>Brand:</b> ${esc(i.brand||"Not specified")}</p><div class="match-box mb-3"><b>Privacy note:</b> Some identifying details are kept private to help verify genuine claims.</div>${claimBtn}</div></div>`;
+new bootstrap.Modal("#itemModal").show();
+}
+function openClaim(id){if(!currentUser){toast("Please login to submit a claim.");bootstrap.Modal.getInstance(document.getElementById("itemModal"))?.hide();openAuth();return}document.getElementById("claimItemId").value=id;bootstrap.Modal.getInstance(document.getElementById("itemModal"))?.hide();new bootstrap.Modal("#claimModal").show();}
+document.getElementById("claimForm").onsubmit=e=>{e.preventDefault();let id=+document.getElementById("claimItemId").value,i=items.find(x=>x.id===id);claims.push({id:Date.now(),itemId:id,userId:currentUser.id,reason:document.getElementById("claimReason").value,location:document.getElementById("claimLocation").value,date:document.getElementById("claimDate").value,details:document.getElementById("claimDetails").value,status:"PENDING",createdAt:new Date().toISOString()});notifications.push({id:Date.now()+1,userId:i.userId,text:`A claim was submitted for "${i.name}".`,read:false,date:new Date().toISOString()});save();bootstrap.Modal.getInstance(document.getElementById("claimModal")).hide();e.target.reset();toast("Claim request submitted successfully.");updateNav();};
+function addItem(form){let data=Object.fromEntries(new FormData(form));let item={id:Date.now(),type:data.type,name:data.name,category:data.category,date:data.date,location:data.location,color:data.color,brand:data.brand,description:data.description,image:data.image,status:data.type==="lost"?"LOST":"FOUND",userId:currentUser.id};items.push(item);save();form.reset();toast(`${data.type==="lost"?"Lost":"Found"} item reported successfully!`);showPage(data.type==="lost"?"lost":"found");}
+document.getElementById("lostForm").onsubmit=e=>{e.preventDefault();addItem(e.target)};document.getElementById("foundForm").onsubmit=e=>{e.preventDefault();addItem(e.target)};
+document.getElementById("loginForm").onsubmit=e=>{e.preventDefault();let email=loginEmail.value.toLowerCase(),pass=loginPassword.value,u=users.find(x=>x.email.toLowerCase()===email&&x.password===pass);if(!u){toast("Invalid email or password.");return}currentUser=u;save();bootstrap.Modal.getInstance(document.getElementById("authModal")).hide();updateNav();toast("Welcome back, "+u.name+"!");showPage(u.role==="admin"?"admin":"dashboard");};
+document.getElementById("registerForm").onsubmit=e=>{e.preventDefault();let email=regEmail.value.toLowerCase();if(users.some(u=>u.email.toLowerCase()===email)){toast("An account with this email already exists.");return}let u={id:Date.now(),name:regName.value,studentId:regId.value,email,password:regPassword.value,role:"user"};users.push(u);currentUser=u;save();bootstrap.Modal.getInstance(document.getElementById("authModal")).hide();updateNav();toast("Account created successfully!");showPage("dashboard");e.target.reset();};
+function renderDashboard(){if(!currentUser)return;let mine=items.filter(i=>i.userId===currentUser.id),mc=claims.filter(c=>c.userId===currentUser.id);document.getElementById("dashboardContent").innerHTML=`<div class="row g-4 mb-4"><div class="col-md-3"><div class="card stat"><i class="bi bi-exclamation-circle"></i><h3>${mine.filter(i=>i.type==="lost").length}</h3><p class="mb-0">My Lost Items</p></div></div><div class="col-md-3"><div class="card stat"><i class="bi bi-box"></i><h3>${mine.filter(i=>i.type==="found").length}</h3><p class="mb-0">My Found Items</p></div></div><div class="col-md-3"><div class="card stat"><i class="bi bi-send"></i><h3>${mc.length}</h3><p class="mb-0">My Claims</p></div></div><div class="col-md-3"><div class="card stat"><i class="bi bi-check2-circle"></i><h3>${mc.filter(c=>c.status==="APPROVED"||c.status==="COMPLETED").length}</h3><p class="mb-0">Approved Claims</p></div></div></div><div class="card p-4"><h5>Welcome, ${esc(currentUser.name)} 👋</h5><p class="text-muted">Use the navigation above to report items, browse listings and track your claims.</p><div class="row g-3">${mine.slice(-3).reverse().map(i=>`<div class="col-md-4"><div class="border rounded-3 p-3"><span class="badge ${i.type==="found"?"text-bg-success":"text-bg-warning"}">${i.status}</span><h6 class="mt-2">${esc(i.name)}</h6><small>${esc(i.location)}</small></div></div>`).join("")||"<p class='text-muted'>You have not reported any items yet.</p>"}</div></div>`}
+function renderClaims(){if(!currentUser)return;let mine=claims.filter(c=>c.userId===currentUser.id);document.getElementById("claimsTable").innerHTML=`<thead><tr><th>Claim ID</th><th>Item</th><th>Date</th><th>Status</th></tr></thead><tbody>${mine.map(c=>{let i=items.find(x=>x.id===c.itemId);return `<tr><td>#${c.id}</td><td>${esc(i?.name||"Deleted item")}</td><td>${esc(c.date)}</td><td><span class="badge ${c.status==="APPROVED"||c.status==="COMPLETED"?"text-bg-success":c.status==="REJECTED"?"text-bg-danger":"text-bg-warning"}">${c.status}</span></td></tr>`}).join("")||"<tr><td colspan='4' class='text-center text-muted'>No claims submitted yet.</td></tr>"}</tbody>`}
+function renderNotifications(){let ns=notifications.filter(n=>n.userId===currentUser?.id).sort((a,b)=>new Date(b.date)-new Date(a.date));document.getElementById("notificationsList").innerHTML=ns.map(n=>`<div class="card p-3 mb-3 ${n.read?"":"border-primary"}"><div class="d-flex justify-content-between"><span>${esc(n.text)}</span><small class="text-muted">${new Date(n.date).toLocaleString()}</small></div></div>`).join("")||'<div class="card empty">No notifications.</div>';ns.forEach(n=>n.read=true);save();updateNav();}
+function markAllRead(){notifications.filter(n=>n.userId===currentUser?.id).forEach(n=>n.read=true);save();renderNotifications();}
+function renderAdmin(){if(currentUser?.role!=="admin"){showPage("home");return}let pending=claims.filter(c=>c.status==="PENDING");document.getElementById("adminContent").innerHTML=`<div class="row g-4 mb-4"><div class="col-md-3"><div class="card stat"><i class="bi bi-people"></i><h3>${users.length}</h3><p class="mb-0">Users</p></div></div><div class="col-md-3"><div class="card stat"><i class="bi bi-list-check"></i><h3>${items.length}</h3><p class="mb-0">Items</p></div></div><div class="col-md-3"><div class="card stat"><i class="bi bi-hourglass"></i><h3>${pending.length}</h3><p class="mb-0">Pending Claims</p></div></div><div class="col-md-3"><div class="card stat"><i class="bi bi-check-circle"></i><h3>${items.filter(i=>i.status==="RETURNED").length}</h3><p class="mb-0">Returned</p></div></div></div><div class="card p-4 mb-4"><h5>Claim Requests</h5><div class="table-responsive"><table class="table"><thead><tr><th>ID</th><th>Item</th><th>Claimant</th><th>Status</th><th>Action</th></tr></thead><tbody>${claims.map(c=>{let i=items.find(x=>x.id===c.itemId),u=users.find(x=>x.id===c.userId);return `<tr><td>#${c.id}</td><td>${esc(i?.name)}</td><td>${esc(u?.name)}</td><td><span class="badge text-bg-${c.status==="REJECTED"?"danger":c.status==="COMPLETED"?"success":"warning"}">${c.status}</span></td><td>${c.status==="PENDING"?`<button class="btn btn-sm btn-success me-1" onclick="reviewClaim(${c.id},'APPROVED')">Approve</button><button class="btn btn-sm btn-outline-danger" onclick="reviewClaim(${c.id},'REJECTED')">Reject</button>`:c.status==="APPROVED"?`<button class="btn btn-sm btn-primary" onclick="reviewClaim(${c.id},'COMPLETED')">Mark Returned</button>`:"-"}</td></tr>`}).join("")||"<tr><td colspan='5'>No claims.</td></tr>"}</tbody></table></div></div><div class="card p-4"><h5>All Items</h5><div class="table-responsive"><table class="table"><thead><tr><th>Item</th><th>Type</th><th>Category</th><th>Status</th><th>Action</th></tr></thead><tbody>${items.map(i=>`<tr><td>${esc(i.name)}</td><td>${i.type}</td><td>${esc(i.category)}</td><td>${i.status}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteItem(${i.id})">Delete</button></td></tr>`).join("")}</tbody></table></div></div>`}
+function reviewClaim(id,status){let c=claims.find(x=>x.id===id),i=items.find(x=>x.id===c.itemId);if(!c||!i)return;c.status=status;if(status==="COMPLETED")i.status="RETURNED";else if(status==="APPROVED")i.status="CLAIMED";notifications.push({id:Date.now(),userId:c.userId,text:`Your claim for "${i.name}" is now ${status}.`,read:false,date:new Date().toISOString()});save();toast("Claim updated.");renderAdmin();updateNav();}
+function deleteItem(id){if(confirm("Delete this item?")){items=items.filter(i=>i.id!==id);claims=claims.filter(c=>c.itemId!==id);save();renderAdmin();toast("Item deleted.");}}
+function updateStats(){document.getElementById("statLost").textContent=items.filter(i=>i.type==="lost"&&i.status==="LOST").length;document.getElementById("statFound").textContent=items.filter(i=>i.type==="found"&&i.status==="FOUND").length;document.getElementById("statReturned").textContent=items.filter(i=>i.status==="RETURNED").length;document.getElementById("statClaims").textContent=claims.filter(c=>c.status==="PENDING").length}
+fillCategories();updateNav();updateStats();
+document.getElementById("lostSearch").oninput=()=>renderItems("lost");document.getElementById("foundSearch").oninput=()=>renderItems("found");
+</script>
+</body>
+</html>
